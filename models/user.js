@@ -1,0 +1,67 @@
+const { Model } = require('sequelize');
+
+module.exports = (sequelize, DataTypes) => {
+  class User extends Model {
+    static associate(db) {
+      User.hasMany(db.Category, {
+        as: 'categories',
+        foreignKey: 'seller_id'
+      });
+
+    }
+  }
+
+  User.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
+    first_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: 'First name is required' },
+      }
+    },
+    last_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notNull: { msg: 'Last name is required' },
+      }
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+        notNull: { msg: 'Email is required' }
+      }
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: { notNull: { msg: 'Password is required' } }
+    },
+    role: {
+      type: DataTypes.ENUM('buyer', 'seller'),
+      allowNull: false,
+      validate: {
+        isIn: {
+          args: [['buyer', 'seller']],
+          msg: 'Role must be buyer or seller'
+        }
+      }
+    }
+  }, {
+    sequelize,
+    modelName: 'User',
+    freezeTableName: true,
+    tableName: 'users',
+    timestamps: true,
+  });
+
+  return User;
+};
