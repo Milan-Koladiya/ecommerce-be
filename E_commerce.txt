@@ -111,7 +111,7 @@ Subcategories
     POST API: /subcategories ( Create a new subcategory)
     GET API: /subcategories?category_id ( Get subcategories by category)
     PUT API: /subcategories/:id ( Update subcategory)
-    DELETE API: /subcategories/:id ( Delete subcategory)
+    DELETE API: /subcategories/:id ( Delete subcategory)=====
 
 Cart:
 ==============================

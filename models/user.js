@@ -3,12 +3,17 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(db) {
-      User.hasMany(db.Category, {
-        as: 'categories',
-        foreignKey: 'seller_id'
-      });
-
-    }
+        User.hasMany(db.Category, {
+          as: 'categories',
+          foreignKey: 'seller_id'
+        });
+      
+        User.hasMany(db.Subcategory, {
+          as: 'subcategories',
+          foreignKey: 'seller_id'
+        });
+      }
+      
   }
 
   User.init({
@@ -61,6 +66,7 @@ module.exports = (sequelize, DataTypes) => {
     freezeTableName: true,
     tableName: 'users',
     timestamps: true,
+    paranoid: true    
   });
 
   return User;

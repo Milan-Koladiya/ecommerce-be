@@ -1,46 +1,40 @@
 const authService = require("../services/auth.service")
+const { successRes, catchRes, errorRes } = require("../utils/response.function")
 
-const register_user = async (req, res) => {
+
+
+const registerUser = async (req, res) => {
     try {
         const userBody = req.body
-        console.log(userBody)
         const user = await authService.createUser(userBody);
-        console.log(user)
-        return res.status(200).json({
-            error: false,
-            message: "User Register Successfully!",
-            data: { user: user }
-        });
+        return successRes(res, "User Register Successfully!", user, 201)
     }
     catch (error) {
         console.log("Something want wrong!", error.message)
-        return res.status(400).json({
-            error: true,
-            message: error.message,
-            data: null
-
-        });
+        return catchRes(res, error.message, 500)
     }
 }
 
-const login_user = async (req, res) => {
+const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body
         const data = await authService.findUser({ email: email, password: password })
+        const userExist = await authService.findUser({ email: email })
 
-        if (!data) {
-            return res.status(500).send({ msg: "Please enter valid email or password!" })
+        if (!userExist) {
+            return errorRes(res, "Account Not exist")
         }
-        return res.status(500).send({ msg: "User login successfully", data: data })
+        
+        if (!data) {
+            return errorRes(res, "Please enter valid email or password!")
+        }
+
+        return successRes(res, "User Login Successfully", data, 200)
     }
     catch (error) {
-        console.log("Something want wrong!", error.message)
-        return res.status(400).json({
-            error: true,
-            message: error.message,
-            data: null
-        });
+        console.log("Something want wrong!", error)
+        return catchRes(res, error.message, 500)
     }
 }
 
-module.exports = { register_user, login_user }
+module.exports = { registerUser, loginUser }

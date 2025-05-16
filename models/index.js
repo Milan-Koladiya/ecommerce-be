@@ -18,7 +18,7 @@ fs
   .forEach(file => {
     const modelPath = path.join(__dirname, file);
     const modelFn = require(modelPath);
-    
+
     if (typeof modelFn === 'function') {
       const model = modelFn(sequelize, Sequelize.DataTypes);
       db[model.name] = model;

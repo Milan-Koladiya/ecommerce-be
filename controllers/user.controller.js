@@ -1,30 +1,22 @@
 const userService = require("../services/user.service")
+const { successRes, catchRes, errorRes } = require("../utils/response.function")
 
 const getprofile = async (req, res) => {
     try {
         const { id } = req.body
+
         const user = await userService.findUser({ id: id })
+
         if (!user) {
-            return res.status(200).json({
-                error: false,
-                message: "user not found"
-            });
+            return errorRes(res, "User not found")
         }
-        return res.status(200).json({
-            error: false,
-            message: "User profile get successfully",
-            data: { user: user }
-        });
+        return successRes(res, "User profile get successfully", user, 200)
 
     }
     catch (error) {
         console.log("Something want wrong!", error.message)
-        return res.status(400).json({
-            error: true,
-            message: error.message,
-            data: null
+        return catchRes(res, error.message, 500)
 
-        });
     }
 }
 
@@ -32,32 +24,38 @@ const updateUserProfile = async (req, res) => {
     try {
         const userBody = req.body
         const { id } = req.body
-
         const user = await userService.findUser({ id: id })
-        if (!user) {
-            return res.status(200).json({
-                error: false,
-                message: "user not found"
-            });
-        }
-        const updatedata = await userService.updateUser(userBody, { id: id })
-        console.log(updatedata)
-        return res.status(200).json({
-            error: false,
-            message: "User profile get successfully",
-            data: { user: updatedata }
-        });
 
+        if (!user) {
+            return errorRes(res, "User not found")
+        }
+
+        const updatedata = await userService.updateUser(userBody, { id: id })
+
+        return successRes(res, "User Profile Update Successfully!", updatedata, 200)
     }
     catch (error) {
         console.log("Something want wrong!", error)
-        return res.status(400).json({
-            error: true,
-            message: error.message,
-            data: null
-
-        });
+        return catchRes(res, error.message, 500)
     }
-
 }
-module.exports = { getprofile, updateUserProfile }
+
+
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.body
+        const user = await userService.findUser({ id: id })
+
+        if (!user) {
+            return errorRes(res, "User not found")
+        }
+
+        const deletedUser=await userService.deleteUser({id:id})
+        return successRes(res, "User deleted successfully",deletedUser)
+    }
+    catch (error) {
+        console.log("Something want wrong!", error)
+        return catchRes(res, error.message, 500)
+    }
+}
+module.exports = { getprofile, updateUserProfile ,deleteUser}
