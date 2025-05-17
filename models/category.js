@@ -3,17 +3,13 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Category extends Model {
     static associate(db) {
-        Category.belongsTo(db.User, {
-          as: 'seller',
-          foreignKey: 'seller_id'
-        });
+        Category.belongsTo(db.User, { as: 'seller', foreignKey: 'seller_id' });
       
-        Category.hasMany(db.Subcategory, {
-          as: 'subcategories',
-          foreignKey: 'category_id'
-        });
-      }
-      
+        Category.hasMany(db.Subcategory, { as: 'subcategory', foreignKey: 'category_id' }); 
+
+        Category.hasMany(db.Product, { as: 'product', foreignKey: 'category_id'});
+
+    }
   }
 
   Category.init({

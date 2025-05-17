@@ -94,7 +94,7 @@ Users (Auth & Profile)
 Products (Seller & Buyer View)
 ==============================
     POST API: /products ( Create a new product )
-    GET API: /products ( Get all products with filters)
+    POST API: /products/filter ( Get all products with filters)
     GET API: /products/:id ( Get a single product by ID)
     PUT API: /products/:id ( Update product)
     DELETE API: /products/:id ( Soft-delete product )

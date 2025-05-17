@@ -8,12 +8,10 @@ const createUser = async (userBody) => {
     return user
 }
 
-
 const isValidUser = async (whereQuery, attributes = null) => {
     const user = await User.findOne({ where: whereQuery, attributes });
     return user
 };
-
 
 const findUser = async (whereQuery, attributes = null) => {
     const user = await User.findOne({ where: whereQuery, attributes })

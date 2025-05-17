@@ -10,8 +10,8 @@ sequelize.sync({ force: false })
     .catch((error) => console.log("DB connection error", error))
 
 app.use(morgan("dev"))
-
-
+app.use(express.urlencoded({extended:true}))
+app.use(express.static("/public/uploads"))
 app.use("/",require("./routes/index"));
 
 let port = process.env.PORT
