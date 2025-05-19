@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
 
         User.hasMany(db.Product, { as: 'product', foreignKey: 'seller_id'});
 
+        User.hasMany(db.Cart, { as: 'cart', foreignKey: 'user_id'});
+
+        User.hasMany(db.Order, { as: 'order', foreignKey: 'user_id'});
+
       }
       
   }

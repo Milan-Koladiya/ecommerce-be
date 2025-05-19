@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
 
         Product.belongsTo(db.Subcategory, {as: 'subcategory', foreignKey: 'subcategory_id' });
 
+        Product.hasMany(db.Cart, {as: 'cart', foreignKey: 'product_id'});
+
+        Product.hasMany(db.Order_items, { as: 'order_items', foreignKey:'product_id' });
+
       }      
   }
 
@@ -38,7 +42,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     image_url: {
         type: DataTypes.STRING,
-        allowNull: false,
     },
     category_id: {
       type: DataTypes.UUID,

@@ -21,4 +21,10 @@ const deleteProduct = async (whereQuery) => {
     return product
 }
 
-module.exports = { createProduct, findProduct, updateProduct, deleteProduct }
+
+const filter = async (whereQuery) => {
+    const product = await Product.findAll({ where: whereQuery })
+    return product
+}
+
+module.exports = { createProduct, findProduct, updateProduct, deleteProduct, filter }

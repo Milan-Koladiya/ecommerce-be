@@ -1,12 +1,13 @@
 const productService = require("../services/product.service")
 const { successRes, catchRes, errorRes } = require("../utils/response.function")
-
+const { Op } = require("sequelize");
 
 
 const createProduct = async (req, res) => {
     try {
         const productBody = req.body
         const file = req.file
+        console.log(req.file)
         const data = {
             ...productBody,
             image_url: file.filename
@@ -40,7 +41,7 @@ const getSingleProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const productBody = req.body
-        const id = req.params
+        const {id}= req.params
 
         const product = await productService.findProduct(req.params)
         if (!product) {
@@ -59,7 +60,7 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
-        const { id } = req.params
+        const  {id} = req.params
 
         const product = await productService.findProduct({ id: id })
         if (!product) {
@@ -75,12 +76,49 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-const filterProduct = (req, res) => {
+const filterProduct = async (req, res) => {
     try {
-        const {id,name,description,price,quantity,categoty_id,subcategory_id,seller_id}=req.body
-        console.log(req.file)
-        
-    return successRes(res, "Product Get Successfully", data)
+        const { id, name, description,price, quantity, categoty_id, subcategory_id, seller_id } = req.body
+        const whereCondition = {};
+        if (id) {
+            whereCondition.id = id
+        }
+
+        if (name) {
+            whereCondition.name = { [Op.iLike]: `%${name}%` }
+        }
+
+        if (description) {
+            whereCondition.description = description
+        }
+
+        if (price) {
+            whereCondition.price ={[Op.eq]:Number(price)}
+            console.log("Price from body:", price, "Type:", typeof price);
+
+        }
+
+        if (quantity) {
+            whereCondition.quantity = quantity
+        }
+
+        if (categoty_id) {
+            whereCondition.categoty_id = categoty_id
+        }
+
+        if (subcategory_id) {
+            whereCondition.subcategory_id = subcategory_id
+        }
+
+        if (seller_id) {
+            whereCondition.seller_id = seller_id
+        }
+
+        const filterdata = await productService.filter(whereCondition)
+        if (filterdata.length == 0) {
+            return errorRes(res,"no data found")
+        }
+        return successRes(res, "Product Get Successfully", filterdata)
 
     }
     catch (error) {
@@ -88,4 +126,4 @@ const filterProduct = (req, res) => {
         return catchRes(res, error.message, 500)
     }
 }
-module.exports = { createProduct, getSingleProduct, updateProduct, deleteProduct,filterProduct}
+module.exports = { createProduct, getSingleProduct, updateProduct, deleteProduct, filterProduct }

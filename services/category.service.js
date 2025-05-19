@@ -1,6 +1,6 @@
 const { Category } = require("../models")
 
-const createCategory = (categoryBody) => {
+const createCategory = async(categoryBody) => {
     const category = Category.create(categoryBody)
     return category
 }

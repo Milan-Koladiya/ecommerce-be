@@ -1,6 +1,6 @@
 const router = require("express").Router();
 
-const { registerUser,loginUser } = require("../controllers/auth.controller");
+const { registerUser, loginUser } = require("../controllers/auth.controller");
 const multipartyMiddleware = require("connect-multiparty")();
 
 router.post("/register", multipartyMiddleware, registerUser);

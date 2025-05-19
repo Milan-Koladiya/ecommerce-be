@@ -2,10 +2,12 @@ const router = require("express").Router();
 
 const { getprofile, updateUserProfile,deleteUser } = require("../controllers/user.controller");
 const multipartyMiddleware = require("connect-multiparty")();
+const { varifytoken } = require("../middlewares/auth.middleware")
 
-router.post("/me", multipartyMiddleware, getprofile);
-router.put("/me", multipartyMiddleware, updateUserProfile);
-router.delete("/me", multipartyMiddleware, deleteUser);
+
+router.get("/me",varifytoken, multipartyMiddleware, getprofile);
+router.put("/me",varifytoken,multipartyMiddleware, updateUserProfile);
+router.delete("/me",varifytoken, multipartyMiddleware, deleteUser);
 
 
 

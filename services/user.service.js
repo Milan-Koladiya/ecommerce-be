@@ -8,7 +8,7 @@ const findUser = async (whereQuery, attributes = null) => {
 
 const updateUser = async (userBody, whereQuery) => {
     const user = await User.update(userBody, { where: whereQuery, paranoid: true })
-    // console.log(user)//it return [1] or [0]
+    //  console.log("=====",user)//it return [1] or [0]
     const updatedUser = await User.findOne({ where: whereQuery,paranoid: true });
     return updatedUser
 

@@ -3,8 +3,7 @@ const { successRes, catchRes, errorRes } = require("../utils/response.function")
 
 const getprofile = async (req, res) => {
     try {
-        const { id } = req.body
-
+        const  id  = req.user.id
         const user = await userService.findUser({ id: id })
 
         if (!user) {
@@ -23,7 +22,8 @@ const getprofile = async (req, res) => {
 const updateUserProfile = async (req, res) => {
     try {
         const userBody = req.body
-        const { id } = req.body
+        const id = req.user.id
+
         const user = await userService.findUser({ id: id })
 
         if (!user) {
@@ -43,7 +43,7 @@ const updateUserProfile = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     try {
-        const { id } = req.body
+        const id  = req.user.id
         const user = await userService.findUser({ id: id })
 
         if (!user) {
