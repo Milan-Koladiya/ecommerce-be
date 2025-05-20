@@ -6,7 +6,13 @@ const { successRes, catchRes, errorRes } = require("../utils/response.function")
 const createCategoryController = async (req, res) => {
 
     try {
-        const { name, seller_id } = req.body
+        const { name } = req.body
+        const seller_id = req.user.id
+
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can add category")
+        }
 
         const sellerExist = await userService.findUser({ id: seller_id })
         if (!sellerExist) {
@@ -18,7 +24,13 @@ const createCategoryController = async (req, res) => {
             return errorRes(res, "Category Already exist!")
         }
 
-        const categoryData = await categoryService.createCategory(req.body)
+        const data = {
+            ...req.body,
+            seller_id: seller_id
+        }
+        
+        console.log(data)
+        const categoryData = await categoryService.createCategory(data)
         return successRes(res, "Category Add Successfully", categoryData, 201)
     }
     catch (error) {
@@ -30,6 +42,11 @@ const createCategoryController = async (req, res) => {
 
 const getAllCategory = async (req, res) => {
     try {
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can get category")
+        }
+
         const allCategory = await categoryService.getAllCategory()
         return successRes(res, "Get All Category Successfully", allCategory, 200)
     }
@@ -44,7 +61,12 @@ const getAllCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
     try {
         const categoryBody = req.body
-        const  id  = req.params.id
+        const id = req.params.id
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can update category")
+        }
+
         const sellerExist = await userService.findUser({ id: categoryBody.seller_id })
         if (!sellerExist) {
             return errorRes(res, "Seller not Found!")
@@ -66,17 +88,24 @@ const updateCategory = async (req, res) => {
 }
 
 
+  
+
+
 const deleteCategory = async (req, res) => {
     try {
         const { id } = req.params
-        
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can delete category")
+        }
+
         const category = await categoryService.findCategory({ id: id })
         if (!category) {
             return errorRes(res, "Category Not Found!")
         }
 
-        const deletedUser=await categoryService.deleteCategory({id:id})
-        return successRes(res, "Category deleted successfully",deletedUser)
+        const deletedUser = await categoryService.deleteCategory({ id: id })
+        return successRes(res, "Category deleted successfully", deletedUser)
     }
     catch (error) {
         console.log("Something want wrong!", error)
@@ -84,4 +113,4 @@ const deleteCategory = async (req, res) => {
     }
 }
 
-module.exports = { createCategoryController, getAllCategory, updateCategory ,deleteCategory}
+module.exports = { createCategoryController, getAllCategory, updateCategory, deleteCategory }

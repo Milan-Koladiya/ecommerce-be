@@ -52,12 +52,12 @@ module.exports = (sequelize, DataTypes) => {
       validate: { notNull: { msg: 'Password is required' } }
     },
     role: {
-      type: DataTypes.ENUM('buyer', 'seller'),
+      type: DataTypes.ENUM('buyer', 'seller','admin'),
       allowNull: false,
       validate: {
         isIn: {
-          args: [['buyer', 'seller']],
-          msg: 'Role must be buyer or seller'
+          args: [['buyer', 'seller','admin']],
+          msg: 'Role must be buyer or seller,admin'
         }
       }
     }

@@ -1,4 +1,7 @@
 const productService = require("../services/product.service")
+const categoryService = require("../services/category.service")
+const subcategoryService = require("../services/subcategories.service")
+const userService = require("../services/user.service")
 const { successRes, catchRes, errorRes } = require("../utils/response.function")
 const { Op } = require("sequelize");
 
@@ -6,12 +9,33 @@ const { Op } = require("sequelize");
 const createProduct = async (req, res) => {
     try {
         const productBody = req.body
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can create product")
+        }
+
+        const sellerExist = await userService.findUser({ id: productBody.seller_id })
+        if (!sellerExist) {
+            return errorRes(res, "Seller not Found!")
+        }
+
+        const catagoryExist = await categoryService.findCategory({ id: productBody.category_id })
+        if (!catagoryExist) {
+            return errorRes(res, "Category not found!")
+        }
+
+        const subcategoryexist = await subcategoryService.findSubcategory({ id: productBody.subcategory_id })
+        if (!subcategoryexist) {
+            return errorRes(res, "Suncategory not found!")
+        }
+
         const file = req.file
-        console.log(req.file)
+
         const data = {
             ...productBody,
-            image_url: file.filename
+            image_url: file.path
         }
+
         const product = await productService.createProduct(data);
         return successRes(res, "Product Add In Category", product, 201)
     }
@@ -24,6 +48,11 @@ const createProduct = async (req, res) => {
 const getSingleProduct = async (req, res) => {
     try {
         const id = req.params
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can get product")
+        }
+
         const product = await productService.findProduct(id)
         if (!product) {
             return errorRes(res, "Product Not Found!")
@@ -41,7 +70,11 @@ const getSingleProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const productBody = req.body
-        const {id}= req.params
+        const { id } = req.params
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can update the product")
+        }
 
         const product = await productService.findProduct(req.params)
         if (!product) {
@@ -60,7 +93,11 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
-        const  {id} = req.params
+        const { id } = req.params
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can delete product")
+        }
 
         const product = await productService.findProduct({ id: id })
         if (!product) {
@@ -78,7 +115,12 @@ const deleteProduct = async (req, res) => {
 
 const filterProduct = async (req, res) => {
     try {
-        const { id, name, description,price, quantity, categoty_id, subcategory_id, seller_id } = req.body
+        const { id, name, description, price, quantity, categoty_id, subcategory_id, seller_id } = req.body
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can filter the product")
+        }
+
         const whereCondition = {};
         if (id) {
             whereCondition.id = id
@@ -93,9 +135,7 @@ const filterProduct = async (req, res) => {
         }
 
         if (price) {
-            whereCondition.price ={[Op.eq]:Number(price)}
-            console.log("Price from body:", price, "Type:", typeof price);
-
+            whereCondition.price = { [Op.eq]: Number(price) }
         }
 
         if (quantity) {
@@ -116,7 +156,7 @@ const filterProduct = async (req, res) => {
 
         const filterdata = await productService.filter(whereCondition)
         if (filterdata.length == 0) {
-            return errorRes(res,"no data found")
+            return errorRes(res, "no data found")
         }
         return successRes(res, "Product Get Successfully", filterdata)
 

@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken")
 
 
-const varifytoken = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
 
     try {
         const authheaders = req.headers.authorization
@@ -17,7 +17,6 @@ const varifytoken = async (req, res, next) => {
 
             }
             req.user = decode
-    
             next();
 
         })
@@ -28,4 +27,4 @@ const varifytoken = async (req, res, next) => {
 
 }
 
-module.exports = {varifytoken}
+module.exports = {authMiddleware}

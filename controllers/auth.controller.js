@@ -22,7 +22,7 @@ const loginUser = async (req, res) => {
 
         const userExist = await authService.findUser({ email: email })
         if (!userExist) {
-            return errorRes(res, "Account Not exist")
+            return errorRes(res, "Account Not exist! Please Register first...")
         }
         if (!data) {
             return errorRes(res, "Please enter valid email or password!")

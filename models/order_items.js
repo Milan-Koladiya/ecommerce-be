@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Order_items',
     freezeTableName: true,
-    tableName: 'order_item',
+    tableName: 'order_items',
     timestamps: true,
     paranoid:true
   });

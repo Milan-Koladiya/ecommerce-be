@@ -1,11 +1,12 @@
 const router = require("express").Router();
-const { createOrder ,getOrderById} = require("../controllers/order.controller");
+const { createOrder ,getOrderById,getOrdersByUser} = require("../controllers/order.controller");
 const multipartyMiddleware = require("connect-multiparty")();
-const { varifytoken } = require("../middlewares/auth.middleware")
+const { authMiddleware } = require("../middlewares/auth.middleware")
 
 
-router.post("/", varifytoken, multipartyMiddleware, createOrder);
-router.get("/:id", varifytoken, multipartyMiddleware, getOrderById);
+router.post("/", authMiddleware, multipartyMiddleware, createOrder);
+router.get("/:id", authMiddleware, multipartyMiddleware, getOrderById);
+router.get("/", authMiddleware, multipartyMiddleware, getOrdersByUser);
 
 
 

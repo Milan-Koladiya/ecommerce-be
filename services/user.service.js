@@ -17,7 +17,10 @@ const updateUser = async (userBody, whereQuery) => {
 const deleteUser = async (whereQuery) => {
     const user = await User.destroy({ where: whereQuery, paranoid: false })
     return user
+}
 
+const validUser=async(userId)=>{
+    
 }
 
 module.exports = { findUser, updateUser, deleteUser }

@@ -2,13 +2,13 @@ const router = require("express").Router();
 
 const { createCategoryController, getAllCategory, updateCategory, deleteCategory } = require("../controllers/category.controller");
 const multipartyMiddleware = require("connect-multiparty")();
-const { varifytoken } = require("../middlewares/auth.middleware")
+const { authMiddleware } = require("../middlewares/auth.middleware")
 
 
-router.post("/", varifytoken,multipartyMiddleware, createCategoryController);
-router.get("/",varifytoken, getAllCategory);
-router.put("/:id",varifytoken,multipartyMiddleware, updateCategory);
-router.delete("/:id",varifytoken, multipartyMiddleware, deleteCategory);
+router.post("/", authMiddleware,multipartyMiddleware, createCategoryController);
+router.get("/",authMiddleware, getAllCategory);
+router.put("/:id",authMiddleware,multipartyMiddleware, updateCategory);
+router.delete("/:id",authMiddleware, multipartyMiddleware, deleteCategory);
 
 
 module.exports = router;

@@ -9,6 +9,10 @@ const createSubcategoryController = async (req, res) => {
     try {
         const { name, category_id, seller_id } = req.body
 
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can add subcategory")
+        }
+
         const sellerExist = await userService.findUser({ id: seller_id })
         if (!sellerExist) {
             return errorRes(res, "Seller not Found!")
@@ -32,6 +36,10 @@ const createSubcategoryController = async (req, res) => {
 const findSubcategoryCategoryIdWise = async (req, res) => {
     try {
         const category_id = req.query.category_id
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can find subcategory")
+        }
 
         const catagoryExist = await categoryService.findCategory({ id: category_id })
         if (!catagoryExist) {
@@ -58,6 +66,11 @@ const updateSubcategory = async (req, res) => {
     try {
         const subcategoryBody = req.body
         const id = req.params.id
+
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can update subcategory")
+        }
+
         const sellerExist = await userService.findUser({ id: subcategoryBody.seller_id })
         if (!sellerExist) {
             return errorRes(res, "Seller not Found!")
@@ -87,6 +100,10 @@ const deleteSubcategory = async (req, res) => {
     try {
         const id = req.params.id
 
+        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+            return errorRes(res, "only seller and admin can delete subcategory")
+        }
+
         const subcategory = await subcategoryService.findSubcategory({ id: id })
         if (!subcategory) {
             return errorRes(res, "Subcategory Not Found!")
@@ -100,6 +117,5 @@ const deleteSubcategory = async (req, res) => {
         return catchRes(res, error.message, 500)
     }
 }
-
 
 module.exports = { createSubcategoryController, findSubcategoryCategoryIdWise, updateSubcategory, deleteSubcategory }
