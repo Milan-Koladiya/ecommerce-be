@@ -2,7 +2,7 @@ const { User } = require("../models")
 
 
 const findUser = async (whereQuery, attributes = null) => {
-    const user = await User.findOne({ where: whereQuery, attributes, paranoid: true })//paranoid:true means deletedAt:null 
+    const user = await User.findOne({ where: whereQuery, attributes })//paranoid:true means deletedAt:null 
     return user
 }
 
@@ -20,7 +20,7 @@ const deleteUser = async (whereQuery) => {
 }
 
 const validUser=async(userId)=>{
-    
+
 }
 
 module.exports = { findUser, updateUser, deleteUser }

@@ -11,11 +11,9 @@ const findCart = async (whereQuery, attributes = null) => {
     return cart
 };
 
-
 const getAllCartItems = async (whereQuery, attributes = null) => {
     console.log("====",whereQuery)
     const cart = await Cart.findAll({ where:whereQuery, attributes });
-
     return cart
 };
 

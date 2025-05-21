@@ -12,7 +12,6 @@ const getBuyer = async () => {
         ],
         attributes: ['id', 'role', 'email'],
     });
-
     return buyer;
 };
 
@@ -30,7 +29,6 @@ const getSeller = async () => {
         ],
         attributes: ['id', 'role', 'email'],
     });
-
     return buyer;
 };
 
