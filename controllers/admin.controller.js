@@ -17,6 +17,7 @@ const getBuyer = async (req, res) => {
     }
 }
 
+
 const getSeller = async (req, res) => {
     try {
 

@@ -29,7 +29,6 @@ const createCategoryController = async (req, res) => {
             seller_id: seller_id
         }
         
-        console.log(data)
         const categoryData = await categoryService.createCategory(data)
         return successRes(res, "Category Add Successfully", categoryData, 201)
     }

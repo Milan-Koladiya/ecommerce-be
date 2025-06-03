@@ -1,4 +1,4 @@
-const { Subcategory } = require("../models")
+const { Subcategory,Category } = require("../models")
 
 const createSubcategory = (subcategoryBody) => {
     const subcategory = Subcategory.create(subcategoryBody)
@@ -11,7 +11,7 @@ const findSubcategory = async (whereQuery, attributes = null) => {
     return subcategory
 }
 
-const getAllSubcategory = async (whereQuery, attributes = null) => {
+const getAllSubcategoryCategoryWise = async (whereQuery, attributes = null) => {
     const subcategory = await Subcategory.findAll({ where: whereQuery, attributes })
     return subcategory
 }
@@ -29,4 +29,18 @@ const deleteSubcategory = async (whereQuery) => {
     return subcategory
 
 }
-module.exports = { createSubcategory, findSubcategory, getAllSubcategory, updateSubcategory, deleteSubcategory }
+
+const getAllSubcategory=async()=>{
+    const subcategories=await Subcategory.findAll({
+        attributes:['id','name','seller_id','category_id'],
+        include:[{
+            model:Category,
+            as:'category',
+            attributes:['id','name']
+        }]
+    })
+    
+    return subcategories
+
+}
+module.exports = { createSubcategory, findSubcategory,getAllSubcategoryCategoryWise, getAllSubcategory, updateSubcategory, deleteSubcategory }

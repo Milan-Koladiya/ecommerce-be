@@ -1,4 +1,4 @@
-const { User } = require("../models")
+const { User, Order } = require("../models")
 
 
 const findUser = async (whereQuery, attributes = null) => {
@@ -9,7 +9,7 @@ const findUser = async (whereQuery, attributes = null) => {
 const updateUser = async (userBody, whereQuery) => {
     const user = await User.update(userBody, { where: whereQuery, paranoid: true })
     //  console.log("=====",user)//it return [1] or [0]
-    const updatedUser = await User.findOne({ where: whereQuery,paranoid: true });
+    const updatedUser = await User.findOne({ where: whereQuery, paranoid: true });
     return updatedUser
 
 }
@@ -19,8 +19,21 @@ const deleteUser = async (whereQuery) => {
     return user
 }
 
-const validUser=async(userId)=>{
-
+const getallBuyer = async () => {
+    const user = await User.find({ whereQuery: { role: 'buyer' } })
+    return user
 }
 
-module.exports = { findUser, updateUser, deleteUser }
+const getUserWithOrders = async () => {
+    const userOrders = await User.findAll({
+        attributes: ['id', 'first_name', 'last_name', 'email'],
+        include: [{
+            model: Order,
+            as:'order',
+            attributes:['id','total_amount','payment_reference','createdAt']
+        }]
+    })
+    return userOrders
+}
+
+module.exports = { findUser, updateUser, deleteUser,getUserWithOrders}

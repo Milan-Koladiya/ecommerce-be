@@ -1,34 +1,35 @@
 const orderService = require("../services/order.service")
+const userService = require("../services/user.service")
 const { successRes, catchRes, errorRes } = require("../utils/response.function")
 
 
 const createOrder = async (req, res) => {
-      
-        try {
-            const  userId = req.user.id;
-            let { items, payment_reference } = req.body;
 
-            if (req.user.role !== 'buyer') {
-                return errorRes(res, "only buyer create the order!")
-            }
-            
-          if (typeof items === 'string') {
+    try {
+        const userId = req.user.id;
+        let { items, payment_reference } = req.body;
+
+        if (req.user.role !== 'buyer') {
+            return errorRes(res, "only buyer create the order!")
+        }
+
+        if (typeof items === 'string') {
             items = JSON.parse(items);
-          }
-      
-          if (!Array.isArray(items) || items.length === 0) {
-            return errorRes(res, 'Items must be a non-empty array') 
-          }
-      
-          const total_amount = items.reduce((sum, item) => sum + item.price, 0);
-      
-          const order = await orderService.createOrder({
+        }
+
+        if (!Array.isArray(items) || items.length === 0) {
+            return errorRes(res, 'Items must be a non-empty array')
+        }
+
+        const total_amount = items.reduce((sum, item) => sum + item.price, 0);
+
+        const order = await orderService.createOrder({
             user_id: userId,
             total_amount,
             payment_reference,
             status: 'panding',
-          }, items);
-          
+        }, items);
+
         return successRes(res, "Order Data Found", order, 201)
 
     }
@@ -42,7 +43,7 @@ const createOrder = async (req, res) => {
 const getOrdersByUser = async (req, res) => {
 
     try {
-        const userId=req.user.id
+        const userId = req.user.id
         const orders = await orderService.findOrdersByUser(userId);
 
         if (req.user.role !== 'buyer') {
@@ -59,7 +60,7 @@ const getOrdersByUser = async (req, res) => {
 
 const getOrderById = async (req, res) => {
     try {
-        const  userId  = req.user.id;
+        const userId = req.user.id;
         const { id } = req.params;
 
         if (req.user.role !== 'buyer') {
@@ -67,8 +68,8 @@ const getOrderById = async (req, res) => {
         }
 
         const order = await orderService.getOrderById(id, userId);
-        if (!order){
-        return errorRes(res, 'Order not found') 
+        if (!order) {
+            return errorRes(res, 'Order not found')
         }
         return successRes(res, "Order Data Found", order, 200)
     }
@@ -78,4 +79,15 @@ const getOrderById = async (req, res) => {
     }
 }
 
-module.exports = { createOrder, getOrdersByUser, getOrderById }
+const getUserWithOrders = async (req, res) => {
+    try {
+        const data = await userService.getUserWithOrders()
+        return successRes(res, "Get orders Of All Users", data)
+    }
+    catch (error) {
+        console.log("Something want wrong!", error)
+        return catchRes(res, error.message, 500)
+    }
+}
+
+module.exports = { createOrder, getOrdersByUser, getOrderById, getUserWithOrders }

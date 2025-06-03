@@ -60,6 +60,10 @@ module.exports = (sequelize, DataTypes) => {
           msg: 'Role must be buyer or seller,admin'
         }
       }
+    },
+    isVerified:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:false
     }
   }, {
     sequelize,

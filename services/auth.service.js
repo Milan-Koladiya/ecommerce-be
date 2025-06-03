@@ -1,10 +1,9 @@
 const { User } = require("../models")
+const { jwt } = require("jsonwebtoken")
 
 const createUser = async (userBody) => {
     const userExist = await isValidUser({ email: userBody.email })
-    if (userExist) throw new Error("Email already exist!")
     const user = await User.create({ ...userBody })
-    console.log(user)
     return user
 }
 
@@ -18,4 +17,18 @@ const findUser = async (whereQuery, attributes = null) => {
     return user
 }
 
-module.exports = { createUser, findUser }
+const updatePassword = async ({ id }, newPassword) => {
+    return await User.update({ password: newPassword }, { where: { id } });
+};
+
+const updateVerified = async (whereClause) => {
+    const user = await User.update(
+        { isVerified: true },
+        { where: whereClause }
+    );
+    return user;
+}
+
+
+
+module.exports = { createUser, findUser, updateVerified,updatePassword}

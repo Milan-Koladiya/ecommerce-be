@@ -166,4 +166,22 @@ const filterProduct = async (req, res) => {
         return catchRes(res, error.message, 500)
     }
 }
-module.exports = { createProduct, getSingleProduct, updateProduct, deleteProduct, filterProduct }
+
+const getAllProduct=async(req,res)=>{
+ try {
+    
+            if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+                return errorRes(res, "only seller and admin can get product details")
+            }
+            const allProduct = await productService.getAllProduct()
+            return successRes(res, "Get All Product Successfully", allProduct, 200)
+        }
+        catch (error) {
+            console.log("Something want wrong!", error)
+            return catchRes(res, error.message, 500)
+        }
+    
+    
+}
+
+module.exports = { createProduct, getSingleProduct, updateProduct, deleteProduct, filterProduct,getAllProduct}

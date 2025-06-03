@@ -1,4 +1,5 @@
-const { Product } = require("../models")
+const { Subcategory, Product,Category } = require("../models")
+
 
 const createProduct = async (productBody) => {
     const product = await Product.create({ ...productBody })
@@ -27,4 +28,21 @@ const filter = async (whereQuery) => {
     return product
 }
 
-module.exports = { createProduct, findProduct, updateProduct, deleteProduct, filter }
+const getAllProduct = async () => {
+    const product = await Product.findAll({
+        attributes: ['id', 'name', 'price', 'quantity', 'description'],
+        include: {
+            model: Subcategory,
+            as: 'subcategory',
+            attributes: ['id', 'name'],
+            include:[{
+                model:Category,
+                as:'category',
+                attributes:['id','name']
+            }]
+        }
+    })
+    return product
+}
+
+module.exports = { createProduct, findProduct, updateProduct, deleteProduct, filter, getAllProduct }
