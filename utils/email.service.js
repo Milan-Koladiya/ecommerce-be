@@ -15,7 +15,7 @@ const sendVerificationEmail = async (user, origin) => {
     const now = Date.now();
     const tokenExpiryTime = now + 15 * 60 * 1000;
     const emailToken = createTokenPair({ ...user.dataValues, tokenExpiryTime });
-    const verificationUrl = `${origin}/auth/verify?token=${emailToken}`;
+    const verificationUrl = `${origin}/verify?token=${emailToken}`;
     await sendEmail(user.email, user.first_name, user.last_name, verificationUrl);
 };
 
@@ -25,7 +25,7 @@ const sendEmail = async (to, firstName, lastname, verificationUrl) => {
         from: process.env.EMAIL_USER,
         to,
         subject: "Welcome to Ecommerce!",
-        html: `<h2>Hello ${firstName + " " + lastname},</h2><a>Thank you for registering on our Ecommerce platform!</a><h3> <a href='${verificationUrl}'> Verify now </a> </h3>`,
+        html: `<h2>Hello ${firstName + " " + lastname},</h2><a>Thank you for registering on our Ecommerce platform!</a><h3> <a href='${verificationUrl}'> Verify now</a> </h3>`,
     };
 
     await transporter.sendMail(mailOptions);

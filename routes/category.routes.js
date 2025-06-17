@@ -6,7 +6,7 @@ const { authMiddleware } = require("../middlewares/auth.middleware")
 
 
 router.post("/", authMiddleware,multipartyMiddleware, createCategoryController);
-router.get("/",authMiddleware, getAllCategory);
+router.get("/", getAllCategory);//remove token verify
 router.put("/:id",authMiddleware,multipartyMiddleware, updateCategory);
 router.delete("/:id",authMiddleware, multipartyMiddleware, deleteCategory);
 

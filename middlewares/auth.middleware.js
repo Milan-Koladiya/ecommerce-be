@@ -5,7 +5,6 @@ const authMiddleware = async (req, res, next) => {
 
     try {
         const authheaders = req.headers['authorization'] || req.headers.authorization 
-        
         if(!authheaders){
             return res.status(401).json({ msg: 'Unauthorized user' });
 

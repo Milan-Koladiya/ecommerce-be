@@ -34,4 +34,16 @@ const getSeller = async (req, res) => {
     }
 }
 
-module.exports = { getBuyer, getSeller }
+const getDashboardSummery = async (req, res) => {
+    try {
+        
+
+        const data = await adminService.getDashboardSummery()
+        return successRes(res, "get Dashboard Summery succesfully ", data, 200)
+    }
+    catch (error) {
+        console.log("Something want wrong!", error)
+        return catchRes(res, error.message, 500)
+    }
+}
+module.exports = { getBuyer, getSeller,getDashboardSummery}

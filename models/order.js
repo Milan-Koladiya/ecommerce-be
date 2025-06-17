@@ -31,13 +31,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull:false
     },
     status:{
-        type: DataTypes.ENUM('panding','paid','failed'),
+        type: DataTypes.ENUM('pending','paid','failed'),
         allowNull: false,
-        defaultValue:'panding',
+        defaultValue:'pending',
         validate: {
           isIn: {
-            args: [['panding','paid','failed']],
-            msg: 'status must be panding,paid,failed'
+            args: [['pending','paid','failed']],
+            msg: 'status must be pending,paid,failed'
           }
         }
     

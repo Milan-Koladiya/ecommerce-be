@@ -1,4 +1,4 @@
-const { Cart } = require("../models")
+const { Cart, Product } = require("../models")
 
 
 const addToCart = async (cartBody) => {
@@ -12,26 +12,32 @@ const findCart = async (whereQuery, attributes = null) => {
 };
 
 const getAllCartItems = async (whereQuery, attributes = null) => {
-    console.log("====",whereQuery)
-    const cart = await Cart.findAll({ where:whereQuery, attributes });
+    const cart = await Cart.findAll({
+        where: whereQuery,
+        include: [{
+            model: Product,
+            as: 'product',
+            attributes: ['id', 'name', 'price', 'description','image_url']
+        }]
+    })
     return cart
 };
 
-const updateQuantity=async(cartBody,whereQuery)=>{
+const updateQuantity = async (cartBody, whereQuery) => {
     const cart = await Cart.update(cartBody, { where: whereQuery, paranoid: true })
-    const updatedCartQuantity = await Cart.findOne({ where: whereQuery,paranoid: true });
+    const updatedCartQuantity = await Cart.findOne({ where: whereQuery, paranoid: true });
     return updatedCartQuantity
 }
 
-const deleteProductFromCart=async(whereQuery)=>{
-    const cart = await Cart.destroy({ where: whereQuery})
+const deleteProductFromCart = async (whereQuery) => {
+    const cart = await Cart.destroy({ where: whereQuery })
     return cart
 }
 
-const clearCart=async(whereQuery)=>{
+const clearCart = async (whereQuery) => {
     const deletedCount = await Cart.destroy({
-        where: whereQuery 
+        where: whereQuery
     });
     return deletedCount;
 }
-module.exports = { addToCart, findCart, getAllCartItems,updateQuantity,deleteProductFromCart,clearCart}
+module.exports = { addToCart, findCart, getAllCartItems, updateQuantity, deleteProductFromCart, clearCart }

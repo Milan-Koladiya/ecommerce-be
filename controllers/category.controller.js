@@ -42,9 +42,9 @@ const createCategoryController = async (req, res) => {
 const getAllCategory = async (req, res) => {
     try {
 
-        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
-            return errorRes(res, "only seller and admin can get category")
-        }
+        // if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+        //     return errorRes(res, "only seller and admin can get category")
+        // }
 
         const allCategory = await categoryService.getAllCategory()
         return successRes(res, "Get All Category Successfully", allCategory, 200)
@@ -61,12 +61,13 @@ const updateCategory = async (req, res) => {
     try {
         const categoryBody = req.body
         const id = req.params.id
+        const seller_id = req.user.id
 
         if (req.user.role !== 'seller' && req.user.role !== 'admin') {
             return errorRes(res, "only seller and admin can update category")
         }
 
-        const sellerExist = await userService.findUser({ id: categoryBody.seller_id })
+        const sellerExist = await userService.findUser({ id: seller_id })
         if (!sellerExist) {
             return errorRes(res, "Seller not Found!")
         }
@@ -87,12 +88,10 @@ const updateCategory = async (req, res) => {
 }
 
 
-  
-
-
 const deleteCategory = async (req, res) => {
     try {
         const { id } = req.params
+        console.log(id)
 
         if (req.user.role !== 'seller' && req.user.role !== 'admin') {
             return errorRes(res, "only seller and admin can delete category")

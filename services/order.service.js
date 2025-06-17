@@ -1,5 +1,5 @@
 
-const { Order, Order_items, Payments } = require("../models")
+const { Order, Cart,Product, Order_items, Payments } = require("../models")
 
 const createOrder = async (data, items) => {
     const order = await Order.create(data);
@@ -7,15 +7,38 @@ const createOrder = async (data, items) => {
         order_id: order.id,
         product_id: item.product_id,
         price: item.price,
+        quantity: item.quantity
+
     }));
     await Order_items.bulkCreate(orderItems);
+
+    await Cart.destroy({
+        where: {
+            user_id: data.user_id,
+            product_id: items.map(item => item.product_id)
+        }
+    });
+
     return order;
 };
 
 const findOrdersByUser = async (userId) => {
     return await Order.findAll({
         where: { user_id: userId },
-        order: [['createdAt', 'DESC']],
+        include: [
+            {
+                model: Order_items,
+                as: 'order_items',
+                attributes: ['id', 'order_id', 'product_id', 'price', 'quantity'],
+                include: [
+                    {
+                        model: Product,
+                        as: 'product',
+                        attributes: ['id', 'name', 'description', 'price', 'image_url']
+                    }
+                ]
+            }
+        ]
     });
 };
 

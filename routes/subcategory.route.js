@@ -6,8 +6,8 @@ const { authMiddleware } = require("../middlewares/auth.middleware");
 
 
 router.post("/",authMiddleware, multipartyMiddleware, createSubcategoryController);
-router.get("/",authMiddleware, multipartyMiddleware, findSubcategoryCategoryIdWise);
-router.get("/allsubcategory",authMiddleware, multipartyMiddleware, getAllSubcategory);
+router.get("/", multipartyMiddleware, findSubcategoryCategoryIdWise);//remove token verify
+router.get("/allsubcategory", multipartyMiddleware, getAllSubcategory);//remove token verify
 router.put("/:id",authMiddleware, multipartyMiddleware, updateSubcategory);
 router.delete("/:id",authMiddleware, multipartyMiddleware, deleteSubcategory);
 

@@ -5,7 +5,7 @@ const { successRes, catchRes, errorRes } = require("../utils/response.function")
 const createPayment = async (req, res) => {
     try {
         const { order_id, amount, status, payment_method, paid_at } = req.body;
-
+console.log(req.body)
         if (req.user.role !== 'buyer') {
             return errorRes(res, "only buyer can create payment")
         }
@@ -23,7 +23,6 @@ const createPayment = async (req, res) => {
         } else {
             await orderService.updateStatus(order_id, { status: 'failed' });
         }
-
         return successRes(res, "payment successfully", payment, 201)
     }
     catch (error) {

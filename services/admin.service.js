@@ -1,4 +1,4 @@
-const { User, Order, Product } = require("../models");
+const { User, Category, Subcategory, Product, Order } = require("../models");
 
 const getBuyer = async () => {
     const buyer = await User.findAll({
@@ -32,4 +32,23 @@ const getSeller = async () => {
     return buyer;
 };
 
-module.exports = { getBuyer, getSeller };
+
+const getDashboardSummery=async()=>{
+    const totalUsers = await User.count();
+    const totalCategories = await Category.count();
+    const totalSubcategories = await Subcategory.count();
+    const totalProducts = await Product.count();
+    const totalOrders = await Order.count();
+    
+    return ({
+      totalUsers,
+      totalCategories,
+      totalSubcategories,
+      totalProducts,
+      totalOrders,
+    });
+}
+
+
+
+module.exports = { getBuyer, getSeller,getDashboardSummery };

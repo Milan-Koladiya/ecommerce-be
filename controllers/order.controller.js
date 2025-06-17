@@ -8,6 +8,7 @@ const createOrder = async (req, res) => {
     try {
         const userId = req.user.id;
         let { items, payment_reference } = req.body;
+        console.log(req.body)
 
         if (req.user.role !== 'buyer') {
             return errorRes(res, "only buyer create the order!")
@@ -20,17 +21,17 @@ const createOrder = async (req, res) => {
         if (!Array.isArray(items) || items.length === 0) {
             return errorRes(res, 'Items must be a non-empty array')
         }
-
-        const total_amount = items.reduce((sum, item) => sum + item.price, 0);
-
+    
+        const total_amount = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
         const order = await orderService.createOrder({
             user_id: userId,
             total_amount,
             payment_reference,
-            status: 'panding',
+            status: 'pending',
         }, items);
 
-        return successRes(res, "Order Data Found", order, 201)
+        return successRes(res, "Order create successfully", order, 201)
 
     }
     catch (error) {

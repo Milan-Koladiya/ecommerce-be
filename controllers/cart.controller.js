@@ -3,45 +3,87 @@ const { successRes, catchRes, errorRes } = require("../utils/response.function")
 
 
 
+// const addToCart = async (req, res) => {
+//     try {
+//         // const cartBody = req.body
+//         const cartBody = {
+//             product_id: req.body.product_id,
+//             user_id: req.user.id,
+//             quantity: req.body.quantity
+//         }
+        
+//         if (req.user.role !== 'buyer') {
+//             return errorRes(res, "only buyer add the product into the cart")
+//         }
+
+//         // const findExistCartProduct = await cartService.findCart(cartBody)
+//         // console.log(findExistCartProduct)
+//         // if (findExistCartProduct) {
+//         //     return errorRes(res, "user add this already into the cart")
+//         // }
+//         const data = await cartService.addToCart(cartBody)
+//         return successRes(res, "Product Add into The Cart", data, 201)
+//     }
+//     catch (error) {
+//         console.log("Something want wrong!", error.message)
+//         return catchRes(res, error.message, 500)
+//     }
+// }
+
+
 const addToCart = async (req, res) => {
     try {
-        const cartBody = req.body
+        const user_id = req.user.id;
+        const { product_id, quantity } = req.body;
+
         if (req.user.role !== 'buyer') {
-            return errorRes(res, "only buyer add the product into the cart")
+            return errorRes(res, "Only buyers can add products to the cart.");
         }
 
-        const findExistCartProduct = await cartService.findCart(cartBody)
-        if (findExistCartProduct) {
-            return errorRes(res, "user add this already into the cart")
+        const cartBody = { product_id, user_id, quantity };
+
+        const existingCartItem = await cartService.findCart({ user_id, product_id });
+
+        if (existingCartItem) {
+            const newQuantity = existingCartItem.quantity +1;
+            if (newQuantity > 10) {
+                return errorRes(res, "You cannot add more than 10 product.");
+            }
+
+            const updatedItem = await cartService.updateQuantity(
+                { quantity: newQuantity },
+                { user_id, product_id }
+            );
+
+            return successRes(res, "This Product add into the Cart.", updatedItem, 200);
         }
-        const data = await cartService.addToCart(cartBody)
-        return successRes(res, "Product Add into The Cart", data, 201)
+
+        const newCartItem = await cartService.addToCart(cartBody);
+        return successRes(res, "Product added to the cart.", newCartItem, 201);
+    } catch (error) {
+        console.log("Something went wrong add to cart!", error.message);
+        return catchRes(res, error.message, 500);
     }
-    catch (error) {
-        console.log("Something want wrong!", error.message)
-        return catchRes(res, error.message, 500)
-    }
-}
+};
 
 
 const getCurrentUserCart = async (req, res) => {
     try {
-        const { user_id } = req.user.id
-
+        const user_id  = req.user.id
         if (req.user.role !== 'buyer') {
             return errorRes(res, "only buyer can get our cart")
         }
 
-        const cartFound = await cartService.getAllCartItems(user_id)
+        const cartFound = await cartService.getAllCartItems({user_id:user_id})
 
-        if (cartFound.length == 0) {
-            return errorRes(res, "this user not add item in cart")
-        }
+        // if (cartFound.length == 0) {
+        //     return errorRes(res, "this user not add item in cart")
+        // }
 
         return successRes(res, "Get All Cart Data Successfully", cartFound, 200)
     }
     catch (error) {
-        console.log("Something want wrong!", error.message)
+        console.log("Something want wrong! getCurrent user  ", error.message)
         return catchRes(res, error.message, 500)
     }
 }

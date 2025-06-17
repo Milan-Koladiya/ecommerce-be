@@ -3,18 +3,23 @@ const categoryService = require("../services/category.service")
 const subcategoryService = require("../services/subcategories.service")
 const userService = require("../services/user.service")
 const { successRes, catchRes, errorRes } = require("../utils/response.function")
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
 
 const createProduct = async (req, res) => {
     try {
+        const seller_id = req.user.id
         const productBody = req.body
 
         if (req.user.role !== 'seller' && req.user.role !== 'admin') {
             return errorRes(res, "only seller and admin can create product")
         }
+        if (!req.file) {
+            return errorRes(res, "image is required")
 
-        const sellerExist = await userService.findUser({ id: productBody.seller_id })
+        }
+
+        const sellerExist = await userService.findUser({ id: seller_id })
         if (!sellerExist) {
             return errorRes(res, "Seller not Found!")
         }
@@ -29,31 +34,38 @@ const createProduct = async (req, res) => {
             return errorRes(res, "Suncategory not found!")
         }
 
+
+        const productExist = await productService.findProduct({ name: productBody.name, category_id: productBody.category_id, subcategory_id: productBody.subcategory_id })
+        if (productExist) {
+            return errorRes(res, "This product already add in this category!")
+        }
         const file = req.file
 
         const data = {
+            seller_id,
             ...productBody,
             image_url: file.path
         }
+        console.log(data)
 
         const product = await productService.createProduct(data);
-        return successRes(res, "Product Add In Category", product, 201)
+        return successRes(res, "Product Add successfully", product, 201)
     }
     catch (error) {
-        console.log("Something want wrong!", error)
+        console.log("Something want wrong add product!", error)
         return catchRes(res, error.message, 500)
     }
 }
 
 const getSingleProduct = async (req, res) => {
     try {
-        const id = req.params
+        const id = req.params.id
 
-        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
-            return errorRes(res, "only seller and admin can get product")
-        }
+        // if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+        //     return errorRes(res, "only seller and admin can get product")
+        // }
 
-        const product = await productService.findProduct(id)
+        const product = await productService.findProduct({ id })
         if (!product) {
             return errorRes(res, "Product Not Found!")
         }
@@ -66,12 +78,11 @@ const getSingleProduct = async (req, res) => {
     }
 }
 
-
 const updateProduct = async (req, res) => {
     try {
         const productBody = req.body
         const { id } = req.params
-
+        console.log(id.productBody)
         if (req.user.role !== 'seller' && req.user.role !== 'admin') {
             return errorRes(res, "only seller and admin can update the product")
         }
@@ -89,7 +100,6 @@ const updateProduct = async (req, res) => {
         return catchRes(res, error.message, 500)
     }
 }
-
 
 const deleteProduct = async (req, res) => {
     try {
@@ -115,50 +125,54 @@ const deleteProduct = async (req, res) => {
 
 const filterProduct = async (req, res) => {
     try {
-        const { id, name, description, price, quantity, categoty_id, subcategory_id, seller_id } = req.body
-
-        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
-            return errorRes(res, "only seller and admin can filter the product")
-        }
+        const { search, ...filter } = req.body;
 
         const whereCondition = {};
-        if (id) {
-            whereCondition.id = id
+
+        if (filter.id) {
+            whereCondition.id = filter.id;
+        }
+        if (filter.category_id) {
+            whereCondition.category_id = filter.category_id;
+        }
+        if (filter.subcategory_id) {
+            whereCondition.subcategory_id = filter.subcategory_id;
+        }
+        if (filter.price) {
+            whereCondition.price = { [Op.eq]: Number(filter.price) };
+        }
+        if (filter.min_price && filter.max_price) {
+            whereCondition.price = {
+                [Op.between]: [Number(filter.min_price), Number(filter.max_price)]
+            };
+        } else if (filter.min_price) {
+            whereCondition.price = {
+                [Op.gte]: Number(filter.min_price)
+            };
+        } else if (filter.max_price) {
+            whereCondition.price = {
+                [Op.lte]: Number(filter.max_price)
+            };
         }
 
-        if (name) {
-            whereCondition.name = { [Op.iLike]: `%${name}%` }
+        let searchCondition = [];
+        if (search) {
+            searchCondition = [
+                { name: { [Op.iLike]: `%${search}%` } },
+                { description: { [Op.iLike]: `%${search}%` } },
+                { '$subcategory.category.name$': { [Op.iLike]: `%${search}%` } },
+                { '$subcategory.name$': { [Op.iLike]: `%${search}%` } }
+            ];
+            whereCondition[Op.or] = searchCondition;
         }
 
-        if (description) {
-            whereCondition.description = description
-        }
+        console.dir(whereCondition, { depth: null })
+        const filterdata = await productService.filter(whereCondition);
 
-        if (price) {
-            whereCondition.price = { [Op.eq]: Number(price) }
+        if (filterdata.length === 0) {
+            return errorRes(res, "No data found");
         }
-
-        if (quantity) {
-            whereCondition.quantity = quantity
-        }
-
-        if (categoty_id) {
-            whereCondition.categoty_id = categoty_id
-        }
-
-        if (subcategory_id) {
-            whereCondition.subcategory_id = subcategory_id
-        }
-
-        if (seller_id) {
-            whereCondition.seller_id = seller_id
-        }
-
-        const filterdata = await productService.filter(whereCondition)
-        if (filterdata.length == 0) {
-            return errorRes(res, "no data found")
-        }
-        return successRes(res, "Product Get Successfully", filterdata)
+        return successRes(res, "Product Get Successfully", filterdata);
 
     }
     catch (error) {
@@ -167,21 +181,62 @@ const filterProduct = async (req, res) => {
     }
 }
 
-const getAllProduct=async(req,res)=>{
- try {
-    
-            if (req.user.role !== 'seller' && req.user.role !== 'admin') {
-                return errorRes(res, "only seller and admin can get product details")
-            }
-            const allProduct = await productService.getAllProduct()
-            return successRes(res, "Get All Product Successfully", allProduct, 200)
-        }
-        catch (error) {
-            console.log("Something want wrong!", error)
-            return catchRes(res, error.message, 500)
-        }
-    
-    
+const getAllProduct = async (req, res) => {
+    try {
+
+        // if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+        //     return errorRes(res, "only seller and admin can get product details")
+        // }
+        const allProduct = await productService.getAllProduct()
+        return successRes(res, "Get All Product Successfully", allProduct, 200)
+    }
+    catch (error) {
+        console.log("Something want wrong!", error)
+        return catchRes(res, error.message, 500)
+    }
+
+
 }
 
-module.exports = { createProduct, getSingleProduct, updateProduct, deleteProduct, filterProduct,getAllProduct}
+module.exports = { createProduct, getSingleProduct, updateProduct, deleteProduct, filterProduct, getAllProduct }
+
+
+
+
+
+        // const { search, ...filter } = req.body;
+
+        // const whereCondition = {};
+        // if (filter.id) {
+        //     whereCondition.id = filter.id;
+        // }
+        // if (filter.category_id) {
+        //     whereCondition.category_id = filter.category_id;
+        // }
+        // if (filter.subcategory_id) {
+        //     whereCondition.subcategory_id = filter.subcategory_id;
+        // }
+        // if (filter.price) {
+        //     whereCondition.price = { [Op.eq]: Number(filter.price) };
+        // }
+        // if (filter.min_price && filter.max_price) {
+        //     whereCondition.price = {
+        //         [Op.between]: [Number(filter.min_price), Number(filter.max_price)]
+        //     };
+        // } else if (filter.min_price) {
+        //     whereCondition.price = {
+        //         [Op.gte]: Number(filter.min_price)
+        //     };
+        // } else if (filter.max_price) {
+        //     whereCondition.price = {
+        //         [Op.lte]: Number(filter.max_price)
+        //     };
+        // }
+
+        // if (search) {
+        //     whereCondition[Op.or] = [
+        //         { name: { [Op.iLike]: `%${search}%` } },
+        //         { description: { [Op.iLike]: `%${search}%` } }
+
+        //     ];
+        // }

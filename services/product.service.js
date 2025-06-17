@@ -3,6 +3,7 @@ const { Subcategory, Product,Category } = require("../models")
 
 const createProduct = async (productBody) => {
     const product = await Product.create({ ...productBody })
+    console.log(product)
     return product
 }
 
@@ -24,13 +25,8 @@ const deleteProduct = async (whereQuery) => {
 
 
 const filter = async (whereQuery) => {
-    const product = await Product.findAll({ where: whereQuery })
-    return product
-}
-
-const getAllProduct = async () => {
-    const product = await Product.findAll({
-        attributes: ['id', 'name', 'price', 'quantity', 'description'],
+    const product = await Product.findAll({ where: whereQuery ,
+        attributes: ['id', 'name', 'price', 'quantity', 'description','image_url'],
         include: {
             model: Subcategory,
             as: 'subcategory',
@@ -42,6 +38,24 @@ const getAllProduct = async () => {
             }]
         }
     })
+    return product
+}
+
+const getAllProduct = async () => {
+    const product = await Product.findAll({
+        attributes: ['id', 'name', 'price', 'quantity', 'description','image_url'],
+        include: {
+            model: Subcategory,
+            as: 'subcategory',
+            attributes: ['id', 'name'],
+            include:[{
+                model:Category,
+                as:'category',
+                attributes:['id','name']
+            }]
+        }
+    })
+       
     return product
 }
 

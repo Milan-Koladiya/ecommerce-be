@@ -7,7 +7,6 @@ const { createTokenPair } = require("../utils/JWTtokenHandler")
 const registerUser = async (req, res) => {
     try {
         const userBody = req.body;
-
         const userExist = await authService.findUser({ email: userBody.email });
         if (userExist) {
             return errorRes(res, "Email already exists!");
@@ -16,7 +15,7 @@ const registerUser = async (req, res) => {
         const user = await authService.createUser(userBody);
 
         await sendVerificationEmail(user, req.headers.origin);
-
+console.log(req.headers.origin)
         return successRes(res, "User registered successfully. Please verify your email.", user, 201);
     } catch (error) {
         console.log("Something went wrong!", error);
@@ -26,7 +25,9 @@ const registerUser = async (req, res) => {
 
 const emailVerify = async (req, res) => {
     try {
-        const { token } = req.body;
+    
+        const {token}  = req.body;
+    
         if (!token) return errorRes(res, 'Token is required', 400);
 
         try {
@@ -103,13 +104,19 @@ const forgetPassword = async (req, res) => {
 
         const user = await authService.findUser({ email });
         if (!user) {
-            return errorRes(res, "Your account is not verified yet, we've sent email to verify your account", 404);
+            return errorRes(res, "Account does not exist! Please register first...", 404);
+        }
+
+
+        if (!user.dataValues.isVerified) {
+            console.log('not verified')
+            return errorRes(res, "Your account is not verified yet, we've sent email to verify your account.");
         }
 
         const now = Date.now();
         const tokenExpiryTime = now + 15 * 60 * 1000;
         const resetToken = createTokenPair({ id: user.id, email: user.email, tokenExpiryTime });
-        const resetUrl = `${req.headers.origin}/auth/reset-password?token=${resetToken}`;
+        const resetUrl = `${req.headers.origin}/reset-password?token=${resetToken}`;
         await sendResetPasswordEmail(user.email, user.first_name, user.last_name, resetUrl);
 
         return successRes(res, "Password reset link sent to your email");
@@ -121,7 +128,7 @@ const forgetPassword = async (req, res) => {
 
 const resetPassword = async (req, res) => {
     try {
-        const { token, newPassword } = req.body;
+        const { token, newPassword } = req.body;    
         if (!token || !newPassword) {
             return errorRes(res, "Token and new password are required", 400);
         }
@@ -131,7 +138,7 @@ const resetPassword = async (req, res) => {
 
         const currentTime = Date.now();
         if (currentTime > tokenExpiryTime) {
-            return errorRes(res, "Reset link has expired", 400);
+            return errorRes(res, "Your Reset link has expired", 400);
         }
 
         const user = await authService.findUser({ id });

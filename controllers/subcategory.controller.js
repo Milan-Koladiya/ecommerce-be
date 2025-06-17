@@ -25,6 +25,11 @@ const createSubcategoryController = async (req, res) => {
             return errorRes(res, "Category not found!")
         }
 
+       const subCatagoryExist = await subcategoryService.findSubcategory({ name: name,category_id })
+                if (subCatagoryExist) {
+                    return errorRes(res, "Subcategory Already exist!")
+       }
+
         const data={
             ...req.body,
             seller_id
@@ -43,9 +48,9 @@ const findSubcategoryCategoryIdWise = async (req, res) => {
     try {
         const category_id = req.query.category_id
 
-        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
-            return errorRes(res, "only seller and admin can find subcategory")
-        }
+        // if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+        //     return errorRes(res, "only seller and admin can find subcategory")
+        // }
 
         const catagoryExist = await categoryService.findCategory({ id: category_id })
         if (!catagoryExist) {
@@ -72,12 +77,13 @@ const updateSubcategory = async (req, res) => {
     try {
         const subcategoryBody = req.body
         const id = req.params.id
+        const seller_id=req.user.id
 
         if (req.user.role !== 'seller' && req.user.role !== 'admin') {
             return errorRes(res, "only seller and admin can update subcategory")
         }
 
-        const sellerExist = await userService.findUser({ id: subcategoryBody.seller_id })
+        const sellerExist = await userService.findUser({ id: seller_id })
         if (!sellerExist) {
             return errorRes(res, "Seller not Found!")
         }
@@ -91,6 +97,10 @@ const updateSubcategory = async (req, res) => {
         if (!subcategory) {
             return errorRes(res, "Subcategory Not Found!")
         }
+    //     const subCatagoryExist = await subcategoryService.findSubcategory({ name: subcategoryBody.name,category_id:subcategoryBody.category_id })
+    //             if (subCatagoryExist) {
+    //                 return errorRes(res, "Subcategory Already exist!")
+    //    }
 
         const updatedata = await subcategoryService.updateSubcategory(subcategoryBody, { id: id })
         return successRes(res, "subcategory Update Successfully!", updatedata, 200)
@@ -127,9 +137,9 @@ const deleteSubcategory = async (req, res) => {
 const getAllSubcategory = async (req, res) => {
     try {
 
-        if (req.user.role !== 'seller' && req.user.role !== 'admin') {
-            return errorRes(res, "only seller and admin can get subcategory")
-        }
+        // if (req.user.role !== 'seller' && req.user.role !== 'admin') {
+        //     return errorRes(res, "only seller and admin can get subcategory")
+        // }
 
         const allSubcategory = await subcategoryService.getAllSubcategory()
         return successRes(res, "Get All Subcategory Successfully", allSubcategory, 200)
