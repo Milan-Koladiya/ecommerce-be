@@ -9,8 +9,7 @@ const createOrder = async (req:any, res:Response) => {
     try {
         const userId = req.user.id;
         let { items, payment_reference } = req.body;
-        console.log(req.body)
-
+        console.log("===",req.body,"===")
         if (req.user.role !== 'buyer') {
             return errorRes(res, "only buyer create the order!")
         }
@@ -32,6 +31,7 @@ const createOrder = async (req:any, res:Response) => {
             status: 'pending',
         }, items);
 
+        console.log(order)
         return successRes(res, "Order create successfully", order, 201)
 
     }

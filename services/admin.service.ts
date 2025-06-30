@@ -1,10 +1,5 @@
 import db from "../models"
 const { User, Category, Subcategory, Product, Order } = db;
-// import User from "../models"
-// import Category from "../models"
-// import Subcategory from "../models"
-// import Product from "../models"
-// import Order from "../models"
 
 const getBuyer = async () => {
     const buyer = await User.findAll({

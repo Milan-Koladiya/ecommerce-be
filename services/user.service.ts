@@ -1,5 +1,5 @@
 import db from "../models"
-const { User, Category, Subcategory, Product, Order,Order_items,Cart} = db;
+const { User, Order} = db;
 
 const findUser = async (whereQuery:object, attributes = null) => {
     const user = await User.findOne({ where: whereQuery, attributes })//paranoid:true means deletedAt:null 

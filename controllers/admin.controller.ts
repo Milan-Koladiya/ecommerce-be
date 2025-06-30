@@ -1,9 +1,9 @@
 const adminService = require("../services/admin.service")
 const { successRes, catchRes, errorRes } = require("../utils/response.function")
 import { Request,Response } from "express"
-import { AuthRequest } from "../types/authTypes"
+import type { IAuthRequest } from "../types/auth.types"
 
-const getBuyer = async (req:AuthRequest, res:Response) => {
+const getBuyer = async (req:IAuthRequest, res:Response) => {
     try {
         if (req.user?.role !== 'admin') {
             return errorRes(res, "Only admin can get All Buyer!")
@@ -19,7 +19,7 @@ const getBuyer = async (req:AuthRequest, res:Response) => {
 }
 
 
-const getSeller = async (req:AuthRequest, res:Response) => {
+const getSeller = async (req:IAuthRequest, res:Response) => {
     try {
 
         if (req.user?.role !== 'admin') {
@@ -35,7 +35,7 @@ const getSeller = async (req:AuthRequest, res:Response) => {
     }
 }
 
-const getDashboardSummery = async (req:AuthRequest, res:Response) => {
+const getDashboardSummery = async (req:IAuthRequest, res:Response) => {
     try {
         
 

@@ -1,5 +1,5 @@
 import db from "../models"
-const { User, Category, Subcategory, Product, Order } = db;
+const { User } = db;
 
 const createUser = async (userBody: any) => {
     const userExist = await isValidUser({ email: userBody.email })

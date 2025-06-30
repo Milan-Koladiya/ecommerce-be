@@ -1,5 +1,6 @@
 const nodemailer = require("nodemailer");
 const { createTokenPair } = require("./JWTtokenHandler")
+
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
     port: 587,

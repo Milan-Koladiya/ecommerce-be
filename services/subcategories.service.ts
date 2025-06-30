@@ -1,5 +1,5 @@
 import db from "../models"
-const { User, Category, Subcategory, Product, Order,Order_items,Cart} = db;
+const { Category, Subcategory} = db;
 
 const createSubcategory = (subcategoryBody: any) => {
     const subcategory = Subcategory.create(subcategoryBody)

@@ -1,5 +1,5 @@
 import db from "../models"
-const { User, Category, Subcategory, Product, Order,Cart } = db;
+const { Product,Cart } = db;
 
 const addToCart = async (cartBody:any) => {
     const cart = await Cart.create(cartBody)

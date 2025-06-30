@@ -1,9 +1,9 @@
 const userService = require("../services/user.service")
 const { successRes, catchRes, errorRes } = require("../utils/response.function")
 import { Request,Response } from "express"
-import {AuthRequest} from "../types/authTypes"
+import type {IAuthRequest} from "../types/auth.types"
 
-const getprofile = async (req:AuthRequest, res:Response) => {
+const getprofile = async (req:IAuthRequest, res:Response) => {
     try {
         const id = req.user?.id
 
@@ -21,7 +21,7 @@ const getprofile = async (req:AuthRequest, res:Response) => {
     }
 }
 
-const updateUserProfile = async (req:AuthRequest, res:Response) => {
+const updateUserProfile = async (req:IAuthRequest, res:Response) => {
     try {
         const userBody = req.body
         const id = req.user?.id
@@ -43,7 +43,7 @@ const updateUserProfile = async (req:AuthRequest, res:Response) => {
 }
 
 
-const deleteUser = async (req:AuthRequest, res:Response) => {
+const deleteUser = async (req:IAuthRequest, res:Response) => {
     try {
         const id = req.user?.id
         const user = await userService.findUser({ id: id })

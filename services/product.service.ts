@@ -1,7 +1,8 @@
 import db from "../models"
-const { User, Category, Subcategory, Product, Order,Order_items,Cart} = db;
+import type { IProduct } from "../types/product.types";
+const { Category, Subcategory, Product} = db;
 
-const createProduct = async (productBody:any) => {
+const createProduct = async (productBody:IProduct) => {
     const product = await Product.create({ ...productBody })
     console.log(product)
     return product
@@ -12,8 +13,8 @@ const findProduct = async (whereQuery:any, attributes = null) => {
     return product
 }
 
-const updateProduct = async (userBody:any, whereQuery:any) => {
-    const product = await Product.update(userBody, { where: whereQuery })
+const updateProduct = async (productBody:IProduct, whereQuery:any) => {
+    const product = await Product.update(productBody, { where: whereQuery })
     const updatedProduct = await Product.findOne({ where: whereQuery });
     return updatedProduct
 }

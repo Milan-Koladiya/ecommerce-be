@@ -1,18 +1,18 @@
 import db from "../models"
 const { User, Category, Subcategory, Product, Order,Order_items,Cart} = db;
 
-interface orderData{
+type IOrderData={
     user_id:string,
     [key:string]:any
 }
 
-interface orderItemInput{
+type IOrderItemInput={
     product_id:string,
     price:number,
     quantity:number
 }
 
-const createOrder = async (data:orderData, items:orderItemInput[]) => {
+const createOrder = async (data:IOrderData, items:IOrderItemInput[]) => {
     const order = await Order.create(data);
     const orderItems = items.map(item => ({
         order_id: order.id,

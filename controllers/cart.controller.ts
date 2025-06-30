@@ -2,33 +2,6 @@ const cartService = require("../services/cart.service")
 const { successRes, catchRes, errorRes } = require("../utils/response.function")
 import { Request,Response } from "express"
 
-// const addToCart = async (req, res) => {
-//     try {
-//         // const cartBody = req.body
-//         const cartBody = {
-//             product_id: req.body.product_id,
-//             user_id: req.user.id,
-//             quantity: req.body.quantity
-//         }
-        
-//         if (req.user.role !== 'buyer') {
-//             return errorRes(res, "only buyer add the product into the cart")
-//         }
-
-//         // const findExistCartProduct = await cartService.findCart(cartBody)
-//         // console.log(findExistCartProduct)
-//         // if (findExistCartProduct) {
-//         //     return errorRes(res, "user add this already into the cart")
-//         // }
-//         const data = await cartService.addToCart(cartBody)
-//         return successRes(res, "Product Add into The Cart", data, 201)
-//     }
-//     catch (error) {
-//         console.log("Something want wrong!", error.message)
-//         return catchRes(res, error.message, 500)
-//     }
-// }
-
 
 const addToCart = async (req:any, res:Response) => {
     try {
